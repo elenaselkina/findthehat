@@ -36,7 +36,7 @@ class runTheGame{
     };
 
     outOfField(x,y){
-        if(this.field.length - 1 > x || this.field[0].length -1 > y || x < 0 || y < 0){
+        if(this.field.length - 1 < x || this.field[0].length -1 < y || x < 0 || y < 0){
             return true;
         }
         return false;    
@@ -50,7 +50,7 @@ class runTheGame{
         };
         this.x += x;
         this.y += y;
-        this.field[x][y] = '*';
+        this.field[this.x][this.y] = pathCharacter;
     }
 
     makeAStep(step){
@@ -129,7 +129,7 @@ class runTheGame{
 };
 
 /* 
-================= MAIN PROCESS=============================
+================= MAIN PROCESS=============================     //we rewrite the Hole or the Hat earlier than we check for the value of the node. Need to be checked in advance
 */
 
 let game = new runTheGame();
@@ -139,6 +139,7 @@ game.print();
 
 while(!game.isHat()){
     const step = prompt('What is your next step? ');
+    //const step = 'd'
 
     if(!game.correctCommand(step)) {
         console.log('Choose the direction: Up, Left, Down or Right. ');
@@ -153,9 +154,9 @@ while(!game.isHat()){
         if(tryAgain === 'y') {
             game.initGame(fieldHeight, fieldWidth, holePercent)
         }else break; 
-        
-        game.print();
-    } 
+    };
+    game.print();
+
 
     if(game.isHole()){
         console.log(`oh,no! you fell in the hole! `);
