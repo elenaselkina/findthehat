@@ -1,32 +1,50 @@
 const prompt = require('prompt-sync')({sigint: true});
 
+const hat = '^';
+const hole = 'O';
+const fieldCharacter = '░';
+const pathCharacter = '*';
+
+const stepsVar = ['l','r','u','d'];
+
+const fieldHeight = 10;
+const fieldWidth = 10;
+const holePercent = 10;
+
 class runTheGame{
 
     constructor(){
         this.field = [];
         this.x = 0;
-        this.y = 0
+        this.y = 0;
+        this.percent=0;
         this.out = false;
-    };
+    };    
 
-    stepsVar = ['l','r','u','d'];
-
-    correctCommand = step => {
+    correctCommand(step){
         return stepsVar.includes(step);
     } 
 
-    outOfField = (x,y) => {
+    print(){
+        for(let i = 0; i < this.field.length; i++){
+            let row = '';
+            for(let j = 0; j < this.field[0].length; j++)
+                row += this.field[i][j];           
+
+            console.log(row);
+        };
+    };
+
+    outOfField(x,y){
         if(this.field.length - 1 > x || this.field[0].length -1 > y || x < 0 || y < 0){
             return true;
         }
-        return false;
-    
+        return false;    
     };
 
-    changeCoords = (x,y) => {
+    changeCoords(x,y){
 
-        if(outOfField(this.x + x, this.y + y)){
-            console.log(`you are trying to move out of the field! No way!`);
+        if(this.outOfField(this.x + x, this.y + y)){
             this.out = true;
             return;
         };
@@ -35,9 +53,9 @@ class runTheGame{
         this.field[x][y] = '*';
     }
 
-    makeAStep = step => {
+    makeAStep(step){
 
-            switch(step.toLowerCase()){         //!!!define: what's x and what's y!!!
+            switch(step.toLowerCase()){   
                 case 'u':
                     this.changeCoords(-1,0);
                     break;
@@ -51,77 +69,110 @@ class runTheGame{
                     this.changeCoords(0,-1);
                     break;
                 default:
-                    break;
-                    
+                    break;                    
             };    
     };
 
-    isHole = () => {
+    isHole() {
         if(this.field[this.x,this.y] === hole) 
             return true;
         return false;
     };
 
-    isHat = () => {
+    isHat(){
         if(this.field[this.x,this.y] === hat) 
             return true;
         return false;
     };
 
+    generateRandom(num){
+        return Math.floor(Math.random()*num);
+    };
 
-    initGame = (height, width, percentage) => {
+    initGame(height, width, percentage){
+
+        //Init
+
+        this.x = 0;
+        this.y = 0;
+        this.percent = 0;
+        this.field = [];
+        this.out = false;
+        
 
         //Generate empty field
         for(let i = 0; i < height; i++){
             let row = [];
             for(let j = 0; j < width; j++)
-                row.push[fieldCharacter]; 
-            field.push(row);
+                row.push(fieldCharacter); 
+            this.field.push(row);
         };
 
         //Generate holes
         let holeAmount = Math.floor((height*width)/100)*percentage;
-
         let x,y;
         for(let i = 0; i< holeAmount; i++){
-            x = this.generateRandom(width);
-            y =  this.generateRandom(height);
+            x = this.generateRandom(height);
+            y =  this.generateRandom(width);
 
-            field[y] = this.changeChar(x, hole, field[y]);
+            this.field[x][y] = hole;
         };
 
         //Generate hat
         x = this.generateRandom(width);
         y =  this.generateRandom (height);
+        this.field[x][y] = hat;   
 
-        field[y] = this.changeChar(x, hat, field[y]);
-        this._field = field;    
+        //Set initial path 
+        this.field[0][0] = pathCharacter;  
     }
 };
 
-// main process
+/* 
+================= MAIN PROCESS=============================
+*/
 
 let game = new runTheGame();
-game.initGame(x,y, percent);
+game.initGame(fieldHeight, fieldWidth, holePercent);
+game.print();
 
-while(!isHat()){
-    const step = prompt('What is your next step?');
 
-    if(!correctCommand(step)) {
-        console.log('Choose the direction: Up, Left, Down or Right');
+while(!game.isHat()){
+    const step = prompt('What is your next step? ');
+
+    if(!game.correctCommand(step)) {
+        console.log('Choose the direction: Up, Left, Down or Right. ');
         continue;
     };
 
-    makeAStep(step); 
-    if( this.out ) continue;
+    game.makeAStep(step); 
+    if(game.out) {
+        console.log('Oh no, you fell out of the field! ');
+        tryAgain = prompt('Wanna try again? y/n: ');  
 
-    if(isHole()){
-        console.log(`oh,no! you fell in the hole!`);
-        initGame();
-    };
+        if(tryAgain === 'y') {
+            game.initGame(fieldHeight, fieldWidth, holePercent)
+        }else break; 
+        
+        game.print();
+    } 
 
-    if(isHat()) {
-        console.log(`I bet you've found the hat! We have a winner!`);
-    };
+    if(game.isHole()){
+        console.log(`oh,no! you fell in the hole! `);
+        tryAgain = prompt('Wanna try again? y/n : ');
 
-}
+        if(tryAgain === 'y') {
+            game.initGame(fieldHeight, fieldWidth, holePercent)
+        }else break;  
+    }; 
+
+    if(game.isHat()){
+        console.log(`I bet you've found the hat! We have a winner! `);
+        tryAgain = prompt('Wanna try again? y/n : ');  
+        if(tryAgain === 'y') {
+            game.initGame(fieldHeight, fieldWidth, holePercent)
+        }else break; 
+    }
+};
+
+console.log(`See ya! `);
