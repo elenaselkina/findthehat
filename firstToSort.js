@@ -1,3 +1,12 @@
+/** TO DO
+ *  
+ * 1) moving back -> error
+ * 2) check the cursor before it's been overwrote
+ * 3) rework toLowerCase for the direction commands
+ * 
+ */
+
+
 const prompt = require('prompt-sync')({sigint: true});
 
 const hat = '^';
@@ -129,7 +138,7 @@ class runTheGame{
 };
 
 /* 
-================= MAIN PROCESS=============================     //we rewrite the Hole or the Hat earlier than we check for the value of the node. Need to be checked in advance
+================= MAIN PROCESS=============================     
 */
 
 let game = new runTheGame();
