@@ -1,3 +1,12 @@
+/** TO DO
+ *  
+ * 1) moving back -> error
+ * 2) check the cursor before it's been overwrote
+ * 3) rework toLowerCase for the direction commands
+ * 
+ */
+
+
 const prompt = require('prompt-sync')({sigint: true});
 
 const hat = '^';
@@ -36,7 +45,7 @@ class runTheGame{
     };
 
     outOfField(x,y){
-        if(this.field.length - 1 > x || this.field[0].length -1 > y || x < 0 || y < 0){
+        if(this.field.length - 1 < x || this.field[0].length -1 < y || x < 0 || y < 0){
             return true;
         }
         return false;    
@@ -50,7 +59,7 @@ class runTheGame{
         };
         this.x += x;
         this.y += y;
-        this.field[x][y] = '*';
+        this.field[this.x][this.y] = pathCharacter;
     }
 
     makeAStep(step){
@@ -129,7 +138,7 @@ class runTheGame{
 };
 
 /* 
-================= MAIN PROCESS=============================
+================= MAIN PROCESS=============================     
 */
 
 let game = new runTheGame();
@@ -139,6 +148,7 @@ game.print();
 
 while(!game.isHat()){
     const step = prompt('What is your next step? ');
+    //const step = 'd'
 
     if(!game.correctCommand(step)) {
         console.log('Choose the direction: Up, Left, Down or Right. ');
@@ -153,9 +163,9 @@ while(!game.isHat()){
         if(tryAgain === 'y') {
             game.initGame(fieldHeight, fieldWidth, holePercent)
         }else break; 
-        
-        game.print();
-    } 
+    };
+    game.print();
+
 
     if(game.isHole()){
         console.log(`oh,no! you fell in the hole! `);
